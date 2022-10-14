@@ -1,4 +1,16 @@
 
+const {CONNECTION_STRING} = process.env;
+const Sequelize = require('sequelize');
+require('dotenv').config();
+
+const sequelize = new Sequelize(CONNECTION_STRING, {
+    dialect: 'postgres',
+    dialectOptions: {
+        ssl: {
+            rejectUnauthorized: false
+        }
+    }
+})
 
 module.exports = {
     seed: (req, res) => {
@@ -11,7 +23,12 @@ module.exports = {
                 name varchar
             );
 
-            *****YOUR CODE HERE*****
+            create table cities (
+                city_id serial primary key,
+                name varchar,
+                rating varchar,
+                country_id integer references countries(country_id)
+            );
 
             insert into countries (name)
             values ('Afghanistan'),
@@ -213,5 +230,34 @@ module.exports = {
             console.log('DB seeded!')
             res.sendStatus(200)
         }).catch(err => console.log('error seeding DB', err))
-    }
+    },
+
+    getCountries: (req, res) => {
+        sequelize.query(`select * from countries;`)
+            .then(dbRes => res.status(200).send(dbRes[0]))
+            .catch(err => console.log(err))
+    },
+
+    createCity: (req, res) => {
+        console.log(req.body)
+        let {name} = req.body
+        let {rating} = req.body
+        let {countryId} = req.body
+        sequelize.query(`insert into cities (name, rating, country_id) values ('${name}', '${rating}', '${countryId}');`)
+            .then(dbRes => res.status(200).send(dbRes[0]))
+            .catch(err => console.log(err))
+    },
+    getCities: (req, res) => {
+        sequelize.query(`select city_id as name, cities.name as city, rating,  countries.name as country from cities join countries on countries.country_id = cities.country_id;`)
+            .then(dbRes => res.status(200).send(dbRes[0]))
+            .catch(err => console.log(err))
+    },
+
+    deleteCity: (req, res) => {
+        let {id} = req.param;
+        console.log(req.param);
+        sequelize.query(`delete from cities where city_id = '${id}';`)
+            .then(dbRes => res.status(200).send(dbRes[0]))
+            .catch(err => console.log(err))
+    },
 }
