@@ -248,15 +248,14 @@ module.exports = {
             .catch(err => console.log(err))
     },
     getCities: (req, res) => {
-        sequelize.query(`select city_id as name, cities.name as city, rating,  countries.name as country from cities join countries on countries.country_id = cities.country_id;`)
+        sequelize.query(`select city_id, cities.name as city, rating,  countries.name as country from cities join countries on countries.country_id = cities.country_id;`)
             .then(dbRes => res.status(200).send(dbRes[0]))
             .catch(err => console.log(err))
     },
 
     deleteCity: (req, res) => {
-        let {id} = req.params['id'];
-        console.log(id);
-        sequelize.query(`delete from cities where city_id = '${id}'';`)
+        let {id} = req.params;
+        sequelize.query(`delete from cities where city_id = ${id};`)
             .then(dbRes => res.status(200).send(dbRes[0]))
             .catch(err => console.log(err))
     },

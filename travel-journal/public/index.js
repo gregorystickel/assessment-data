@@ -28,6 +28,7 @@ function handleSubmit(e) {
 }
 
 function deleteCard(id) {
+    console.log("delete card"+id);
     axios.delete(`http://localhost:4004/cities/${id}`)
         .then(() => getCities())
         .catch(err => console.log(err))
@@ -45,8 +46,9 @@ function getCities() {
                     <button onclick="deleteCard(${elem['city_id']})">Delete</button>
                     </div>
                 `
-
+                
                 countryList.innerHTML += countryCard
+                
             })
         })
 }
